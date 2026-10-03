@@ -1,6 +1,6 @@
 # CLEAR-GAS ⚡
 ### Autonomous On-Chain Gas Clearinghouse & Stylus Paymaster for Robinhood Chain & Paxos USDG
-> **Winner Track:** Arbitrum Open House Singapore — Robinhood Chain & Arbitrum Stylus Track
+> **Submission Track:** Arbitrum Open House Singapore — Robinhood Chain & Arbitrum Stylus Track
 
 ---
 
@@ -15,7 +15,7 @@ $$\text{0 ETH} = \text{0 Transactions}$$
 * **Retail Friction**: A user with \$50.00 USDG cannot swap or transfer without first buying, bridging, and depositing native ETH for gas. 95% of retail users abandon the chain at this exact step.
 * **The Centralized Paymaster Trap**: Traditional Web2 paymasters rely on centralized relay servers, API keys, and off-chain relayer balance top-ups. When the relayer's EntryPoint deposit is depleted, transactions silently drop (`AA21 didn't pay prefund`).
 
-**CLEAR-GAS** eliminates this friction. It is the first **autonomous, on-chain gas clearinghouse** built natively with **Arbitrum Stylus (Rust)**, enabling cold-start retail users with **0 ETH** to pay gas directly in **Paxos USDG** in a single atomic transaction.
+**CLEAR-GAS** eliminates this friction. It is an **autonomous, on-chain gas clearinghouse** built natively with **Arbitrum Stylus (Rust)**, enabling cold-start retail users with **0 ETH** to pay gas directly in **Paxos USDG** in a single atomic transaction.
 
 ---
 
@@ -37,6 +37,23 @@ Instead of requiring an off-chain Web2 server or pre-transactions, CLEAR-GAS con
 │  [User ETH remains 0.000]   Mined in Block #10         Self-Healing Buffer auto-refills │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
+
+### 161-Byte Packed Calldata Specification (`paymasterAndData`):
+```text
+[0:20]    paymasterAddress (20 bytes)  - Address of deployed ClearGasPaymaster
+[20:26]   validUntil       (6 bytes)   - 48-bit timestamp upper bound
+[26:32]   validAfter       (6 bytes)   - 48-bit timestamp lower bound
+[32:64]   permitValue      (32 bytes)  - Maximum USDG allowance authorized
+[64:96]   permitDeadline   (32 bytes)  - EIP-2612 expiration timestamp
+[96:97]   v                (1 byte)    - ECDSA recovery ID (27 or 28)
+[97:129]  r                (32 bytes)  - ECDSA signature output r
+[129:161] s                (32 bytes)  - ECDSA signature output s
+```
+
+### Fixed-Point Conversion Law:
+To convert 18-decimal native gas cost to 6-decimal Paxos USDG using Pyth's $10^{-8}$ price exponent:
+$$\text{USDG}_{\mu} = \left\lfloor \frac{\text{GasCost}_{\text{wei}} \times \text{Price}_{\text{Pyth}}}{10^{20}} \right\rfloor \times \frac{10000 + \text{markupBps}}{10000}$$
+*(Where $18\text{ (ETH)} + 8\text{ (Pyth)} - 6\text{ (USDG)} = 20\text{ decimals}$; exact integer alignment without float drift).*
 
 1. **EIP-2612 Atomic Permit Calldata Unpacking**: The user signs an off-chain EIP-712 permit payload. The signature `(v, r, s)` is packed directly into the 161-byte `paymasterAndData` field of the ERC-4337 `PackedUserOperation`. Zero pre-approval transactions required.
 2. **Arbitrum Stylus WASM Preflight Engine**: EIP-2612 verification and fixed-point pricing calculations are offloaded to an Arbitrum Stylus Rust kernel, slashing preflight gas from **268,450 gas down to 14,180 gas (94.7% reduction)**.
