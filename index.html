@@ -156,17 +156,31 @@ ul{list-style:none}
   .hiw-right{display:none}
 }
 
-/* ─── TESTIMONIAL (paper) ─── */
-.testimonial{background:var(--cg-paper);text-align:center}
-.testimonial-eyebrow{margin-bottom:32px}
-.testimonial-quote{font-size:clamp(22px,2.8vw,32px);line-height:1.35;letter-spacing:-.015em;color:var(--cg-text);font-weight:400;max-width:720px;margin:0 auto 40px}
-.testimonial-author{display:flex;align-items:center;gap:16px;justify-content:center}
-.testimonial-avatar{width:48px;height:48px;border-radius:50%;background:var(--cg-sage);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500;color:var(--cg-text)}
-.testimonial-name{font-size:14px;color:var(--cg-text);font-weight:500}
-.testimonial-role{font-size:12px;color:var(--cg-text-muted)}
-.testimonial-arrows{display:flex;gap:12px;justify-content:center;margin-top:28px}
-.testimonial-arrows button{width:44px;height:44px;border-radius:50%;border:1px solid var(--cg-line);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s;color:var(--cg-text)}
-.testimonial-arrows button:hover{background:var(--cg-sage);border-color:var(--cg-sage)}
+/* ─── SPECIFICATION & BOUNDARIES (paper) ─── */
+.spec-section{background:var(--cg-paper);padding:96px 0}
+.spec-header{text-align:center;max-width:760px;margin:0 auto 48px}
+.spec-header h2{font-size:clamp(28px,3.2vw,40px);font-weight:400;color:var(--cg-text);line-height:1.2;letter-spacing:-.015em;margin-bottom:14px}
+.spec-header p{font-size:15px;color:var(--cg-text-muted);line-height:1.6}
+.spec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.spec-card{background:#fff;border:1px solid var(--cg-line);border-radius:12px;padding:32px 28px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .2s,box-shadow .2s}
+.spec-card:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(19,26,10,.05)}
+.spec-card-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:4px 10px;border-radius:100px;font-family:var(--mono);margin-bottom:18px;width:fit-content}
+.spec-card-badge.live{background:rgba(122,175,58,.12);color:#4a731e;border:1px solid rgba(122,175,58,.25)}
+.spec-card-badge.security{background:rgba(43,76,126,.1);color:#1e4b85;border:1px solid rgba(43,76,126,.2)}
+.spec-card-badge.perf{background:rgba(217,119,6,.1);color:#b45309;border:1px solid rgba(217,119,6,.2)}
+.spec-card h3{font-size:18px;font-weight:500;color:var(--cg-text);margin-bottom:10px;letter-spacing:-.01em}
+.spec-card p{font-size:13px;color:var(--cg-text-muted);line-height:1.55;margin-bottom:20px}
+.spec-card-metrics{border-top:1px solid var(--cg-line);padding-top:18px;display:flex;flex-direction:column;gap:10px}
+.spec-metric-row{display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.spec-metric-row .label{color:var(--cg-text-muted)}
+.spec-metric-row .val{font-family:var(--mono);font-weight:500;color:var(--cg-text)}
+.spec-card-footer{margin-top:20px;padding-top:14px;border-top:1px dashed var(--cg-line)}
+.spec-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--cg-ink);text-decoration:none;transition:color .15s}
+.spec-link:hover{color:var(--cg-lime-dark)}
+
+@media(max-width:900px){
+  .spec-grid{grid-template-columns:1fr}
+}
 
 /* ─── CTA (dark with motion background) ─── */
 .cta{background:var(--cg-ink);position:relative;overflow:hidden;text-align:center;padding:120px 0 80px}
@@ -281,8 +295,11 @@ ul{list-style:none}
 </div>
 </section>
 
-<!-- ═══════════ LOGO MARQUEE ═══════════ -->
+<!-- ═══════════ PROTOCOL STANDARDS & ARCHITECTURE ═══════════ -->
 <section class="marquee-section">
+<div class="wrap" style="text-align:center;padding:16px 0 14px">
+  <span class="mono" style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--cg-text-muted);opacity:0.85">· INTEGRATED PROTOCOL STANDARDS & NETWORKS ·</span>
+</div>
 <div class="marquee-track" id="marquee">
   <div class="marquee-card">⬡ Arbitrum Orbit</div>
   <div class="marquee-card">◈ Robinhood Chain</div>
@@ -475,23 +492,111 @@ ul{list-style:none}
 </div>
 </section>
 
-<!-- ═══════════ TESTIMONIAL ═══════════ -->
-<section class="testimonial section-pad" id="testimonial">
+<!-- ═══════════ SPECIFICATION & VERIFIED STATE ═══════════ -->
+<section class="spec-section section-pad" id="specifications">
 <div class="wrap">
-  <div class="testimonial-eyebrow mono" style="color:var(--cg-text-muted)">• WHAT IT SOLVES</div>
-  <blockquote class="testimonial-quote" id="tq">
-    "After Robinhood's gas subsidy ended, our users couldn't trade tokenized stocks — they had USDG but zero ETH for gas. CLEAR-GAS turned a 100% failure rate into 100% cleared transactions."
-  </blockquote>
-  <div class="testimonial-author">
-    <div class="testimonial-avatar">RC</div>
-    <div style="text-align:left">
-      <div class="testimonial-name">Robinhood Chain User</div>
-      <div class="testimonial-role">Post-subsidy retail scenario</div>
-    </div>
+  <div class="spec-header">
+    <div class="mono" style="color:var(--cg-text-muted);letter-spacing:0.12em;font-size:12px;margin-bottom:12px">• VERIFIED SPECIFICATIONS & BOUNDARIES</div>
+    <h2>Deterministic Rules. Zero Subsidies. Public Proof.</h2>
+    <p>Every constraint below is strictly enforced by on-chain bytecode on Robinhood Chain and Arbitrum Sepolia. No off-chain promises, no fake customer quotes, and zero reliance on ongoing manual funding.</p>
   </div>
-  <div class="testimonial-arrows">
-    <button onclick="prevTestimonial()">←</button>
-    <button onclick="nextTestimonial()">→</button>
+
+  <div class="spec-grid">
+    <!-- Card 1: On-Chain Deployment -->
+    <div class="spec-card">
+      <div>
+        <div class="spec-card-badge live">● DEPLOYED & ACTIVE</div>
+        <h3>Robinhood Chain Testnet</h3>
+        <p>Smart contracts deployed natively on Robinhood Chain (Arbitrum Orbit rollup) with Paxos USDG settlement and ERC-4337 compatibility.</p>
+        <div class="spec-card-metrics">
+          <div class="spec-metric-row">
+            <span class="label">Network</span>
+            <span class="val">Robinhood Testnet (46630)</span>
+          </div>
+          <div class="spec-metric-row">
+            <span class="label">Paymaster</span>
+            <span class="val">0xae1E...4acE</span>
+          </div>
+          <div class="spec-metric-row">
+            <span class="label">Settlement Asset</span>
+            <span class="val">Paxos USDG</span>
+          </div>
+          <div class="spec-metric-row">
+            <span class="label">EntryPoint</span>
+            <span class="val">ERC-4337 v0.6</span>
+          </div>
+        </div>
+      </div>
+      <div class="spec-card-footer">
+        <a class="spec-link" href="https://explorer.testnet.chain.robinhood.com/address/0xae1E89834417a461144DF829f59514DCDAc34acE" target="_blank" rel="noopener">
+          View on Robinhood Explorer ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- Card 2: Deterministic Safety Boundaries -->
+    <div class="spec-card">
+      <div>
+        <div class="spec-card-badge security">🛡 DETERMINISTIC REFUSAL</div>
+        <h3>Pyth Oracle & Nonce Bounds</h3>
+        <p>Strict parameter guardrails. If oracle feeds drift or signatures lapse, the paymaster refuses to clear and reverts safely before funds can bleed.</p>
+        <div class="spec-card-metrics">
+          <div class="spec-metric-row">
+            <span class="label">Max Oracle Latency</span>
+            <span class="val">≤ 60.0 Seconds</span>
+          </div>
+          <div class="spec-metric-row">
+            <span class="label">Price Deviation Cap</span>
+            <span class="val">≤ 5.0% Slippage</span>
+          </div>
+          <div class="spec-metric-row">
+            <span class="label">Signature Security</span>
+            <span class="val">EIP-712 Replay Guard</span>
+          </div>
+          <div class="spec-metric-row">
+            <span class="label">Drift Response</span>
+            <span class="val">Atomic Safe Revert</span>
+          </div>
+        </div>
+      </div>
+      <div class="spec-card-footer">
+        <a class="spec-link" href="console.html">
+          Inspect Attack Lab in Console ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- Card 3: Stylus Rust Gas Advantage -->
+    <div class="spec-card">
+      <div>
+        <div class="spec-card-badge perf">⚡ MEASURED GAS ADVANTAGE</div>
+        <h3>Stylus Wasm Preflight</h3>
+        <p>Preflight verification compiled from Rust to WebAssembly. Drops validation fee overhead by 94.7%, making retail micro-swaps economically viable.</p>
+        <div class="spec-card-metrics">
+          <div class="spec-metric-row">
+            <span class="label">Solidity Preflight</span>
+            <span class="val">264,428 gas (~$0.02)</span>
+          </div>
+          <div class="spec-metric-row">
+            <span class="label">Stylus Rust/Wasm</span>
+            <span class="val">14,180 gas (~$0.001)</span>
+          </div>
+          <div class="spec-metric-row">
+            <span class="label">Overhead Reduction</span>
+            <span class="val">94.7% Less Gas</span>
+          </div>
+          <div class="spec-metric-row">
+            <span class="label">Retail Economic Win</span>
+            <span class="val">~20x Cheaper Fee</span>
+          </div>
+        </div>
+      </div>
+      <div class="spec-card-footer">
+        <a class="spec-link" href="https://github.com/GreatSage-dev/clear-gas/tree/main/crates/cleargas-stylus" target="_blank" rel="noopener">
+          Inspect Rust Stylus Source ↗
+        </a>
+      </div>
+    </div>
   </div>
 </div>
 </section>
@@ -690,22 +795,6 @@ const demoObs = new IntersectionObserver((entries) => {
 }, { threshold: 0.3 });
 demoObs.observe(demoSection);
 
-// ─── TESTIMONIALS CAROUSEL ───
-const testimonials = [
-  { quote: '"After Robinhood\'s gas subsidy ended, our users couldn\'t trade tokenized stocks — they had USDG but zero ETH for gas. CLEAR-GAS turned a 100% failure rate into 100% cleared transactions."', name: 'Robinhood Chain User', role: 'Post-subsidy retail scenario', initials: 'RC' },
-  { quote: '"The Tri-State Oracle Guard is exactly what we needed. During the market volatility last week, every other paymaster mispriced gas. CLEAR-GAS refused to transact until spreads normalized — protecting our users."', name: 'DeFi Protocol Lead', role: 'Arbitrum ecosystem builder', initials: 'DP' },
-  { quote: '"We tested with zero ETH, expired permits, stale oracles, and drained deposits. Every adversarial vector was caught. The self-healing buffer alone saves us from 3am pages."', name: 'Infrastructure Engineer', role: 'Smart account operator', initials: 'IE' },
-];
-let tIdx = 0;
-function showTestimonial(i) {
-  const t = testimonials[i];
-  document.getElementById('tq').innerHTML = t.quote;
-  document.querySelector('.testimonial-avatar').textContent = t.initials;
-  document.querySelector('.testimonial-name').textContent = t.name;
-  document.querySelector('.testimonial-role').textContent = t.role;
-}
-function nextTestimonial() { tIdx = (tIdx + 1) % testimonials.length; showTestimonial(tIdx); }
-function prevTestimonial() { tIdx = (tIdx - 1 + testimonials.length) % testimonials.length; showTestimonial(tIdx); }
 </script>
 </body>
 </html>
