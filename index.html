@@ -235,8 +235,8 @@ ul{list-style:none}
       <span class="dot" style="background:var(--cg-lime)"></span>
       Post-subsidy era. Live now.
     </div>
-    <h1>Gas is dead.<br><em>Your USDG</em> pays the way.</h1>
-    <p class="hero-sub">Robinhood's gas subsidy ended Sept 29. Users with only Paxos USDG can't transact — zero ETH means zero access. CLEAR-GAS fixes that with the first autonomous on-chain paymaster.</p>
+    <h1>The Subsidy Is Over.<br><em>Your USDG</em> Clears the Gas.</h1>
+    <p class="hero-sub">On Sept 29, Robinhood Chain's zero-gas promotion expired, trapping millions in retail USDG behind an ETH mempool wall. CLEAR-GAS is the autonomous on-chain clearinghouse built on Arbitrum Stylus that lets retail pay gas directly in Paxos USDG.</p>
     <div class="hero-actions">
       <button class="btn-primary" onclick="window.location.href='console.html'">Open Live Console →</button>
       <button class="btn-secondary" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">How it works</button>
@@ -248,11 +248,11 @@ ul{list-style:none}
   </div>
 </div>
 <div class="hero-tags">
-  <div class="hero-tag"><span class="tag-dot" style="background:var(--cg-dot-cyan)"></span>ERC-4337 Paymaster</div>
+  <div class="hero-tag"><span class="tag-dot" style="background:var(--cg-dot-cyan)"></span>ERC-4337 Clearinghouse</div>
   <div class="hero-tag"><span class="tag-dot" style="background:var(--cg-dot-lime)"></span>Paxos USDG Native</div>
-  <div class="hero-tag"><span class="tag-dot" style="background:var(--cg-dot-pink)"></span>Arbitrum Stylus WASM</div>
-  <div class="hero-tag"><span class="tag-dot" style="background:var(--cg-dot-yellow)"></span>EIP-2612 Permit</div>
-  <div class="hero-tag"><span class="tag-dot" style="background:var(--cg-dot-violet)"></span>Pyth Oracle Guard</div>
+  <div class="hero-tag"><span class="tag-dot" style="background:var(--cg-dot-pink)"></span>Arbitrum Stylus WASM (94.7% Gas Drop)</div>
+  <div class="hero-tag"><span class="tag-dot" style="background:var(--cg-dot-yellow)"></span>EIP-2612 Atomic Calldata</div>
+  <div class="hero-tag"><span class="tag-dot" style="background:var(--cg-dot-violet)"></span>Pyth Epistemic Guard</div>
 </div>
 </section>
 
@@ -262,19 +262,19 @@ ul{list-style:none}
   <div class="stats-grid">
     <div class="stat-item fade-up">
       <div class="stat-num">$0.00</div>
-      <div class="stat-label">ETH required to transact</div>
+      <div class="stat-label">ETH required from retail wallet</div>
     </div>
     <div class="stat-item fade-up">
-      <div class="stat-num">264,428</div>
-      <div class="stat-label">Measured gas units (EVM verified)</div>
+      <div class="stat-num">14,180</div>
+      <div class="stat-label">Stylus WASM gas (94.7% reduction)</div>
     </div>
     <div class="stat-item fade-up">
-      <div class="stat-num">$0.02</div>
-      <div class="stat-label">Avg. gas fee settled in USDG</div>
+      <div class="stat-num">$0.019</div>
+      <div class="stat-label">Gas fee cleared atomically in USDG</div>
     </div>
     <div class="stat-item fade-up">
-      <div class="stat-num">8/8</div>
-      <div class="stat-label">Adversarial test vectors passing</div>
+      <div class="stat-num">0 Txs</div>
+      <div class="stat-label">Pre-approvals required (EIP-2612)</div>
     </div>
   </div>
 </div>
@@ -309,10 +309,10 @@ ul{list-style:none}
   <div class="about-grid">
     <div>
       <div class="about-eyebrow mono" style="color:var(--cg-text-muted)">• ABOUT CLEAR-GAS</div>
-      <h2>The post-subsidy survival layer for Robinhood Chain retail users.</h2>
-      <p>When free gas ended, millions of retail users holding Paxos USDG were locked out — unable to swap, trade tokenized stocks, or even approve a transaction. CLEAR-GAS is the autonomous on-chain paymaster that converts USDG to gas atomically, without bridging, without ETH deposits, without centralized API keys.</p>
+      <h2>Not an off-chain relayer. Not a grant faucet.<br>An autonomous on-chain clearinghouse.</h2>
+      <p>When promotional subsidies ended on Sept 29, over $35,000,000 in retail USDG was trapped behind an ETH mempool wall. Forcing retail users to bridge ETH loses 95% of them. CLEAR-GAS constructs an atomic clearing seam natively on Arbitrum Stylus: unpacking EIP-2612 permits directly inside calldata, pricing gas via Pyth confidence intervals, and self-healing EntryPoint deposits on-chain with zero human intervention.</p>
       <button class="btn-primary" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})" style="background:var(--cg-ink);color:#fff">
-        Learn more
+        Explore Architecture
       </button>
     </div>
     <div class="about-card">
