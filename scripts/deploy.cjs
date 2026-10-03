@@ -78,9 +78,10 @@ async function main() {
   console.log("✓ ClearGasPaymaster deployed:", paymasterAddress);
 
   // 5. Seed EntryPoint deposit with initial buffer (if funded)
-  const depositAmountStr = process.env.INITIAL_DEPOSIT || "0.01";
+  const depositAmountStr = process.env.INITIAL_DEPOSIT || "0.002";
   const depositAmount = hre.ethers.parseEther(depositAmountStr);
-  if (balance >= depositAmount) {
+  const currentBal = await hre.ethers.provider.getBalance(deployer.address);
+  if (currentBal > depositAmount) {
     try {
       const EntryPointFactory = await hre.ethers.getContractFactory("MockEntryPoint");
       const epContract = EntryPointFactory.attach(entryPointAddress);

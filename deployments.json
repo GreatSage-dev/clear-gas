@@ -11,5 +11,18 @@
       "PythOracle": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
       "feedId": "0x5f4c6f3132d13c835f009a978d0841df1ff4449828c02760d2850e30b9f27a04"
     }
+  },
+  "robinhoodTestnet": {
+    "network": "robinhoodTestnet",
+    "chainId": 46630,
+    "deployer": "0x1E94EdCd3195e3E7bCe68b9a20e5B46dE981bd84",
+    "timestamp": "2026-10-03T12:07:41.385Z",
+    "contracts": {
+      "ClearGasPaymaster": "0xae1E89834417a461144DF829f59514DCDAc34acE",
+      "PaxosUSDG": "0x72Fde72b0F4191E10b1b0B3c298234b40519eb46",
+      "EntryPoint": "0xb996464B52A12acF2AC191a1E832f93a245Fa072",
+      "PythOracle": "0x8AD8e35988845aA50df9AF8e1ee3DaeeEf0d022E",
+      "feedId": "0x5f4c6f3132d13c835f009a978d0841df1ff4449828c02760d2850e30b9f27a04"
+    }
   }
 }

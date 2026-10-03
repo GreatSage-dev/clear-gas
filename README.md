@@ -3,6 +3,7 @@
 **A retail investor with $50.00 in Paxos USDG shouldn't be locked out of Robinhood Chain because they have zero ETH.**
 
 - **Live 1-Click Demo (No wallet extension needed):** [https://clear-gas-sigma.vercel.app/console](https://clear-gas-sigma.vercel.app/console)
+- **Live Robinhood Chain Deployment:** [`0xae1E89834417a461144DF829f59514DCDAc34acE`](https://explorer.testnet.chain.robinhood.com/address/0xae1E89834417a461144DF829f59514DCDAc34acE)
 - **Judge Path (60s):** [Skip to Judge Instructions](#1-judge-path-60-seconds) — pre-loaded with an authentic 0-ETH cold wallet; clear gas in USDG in 1 click; trigger live contract reverts in the Attack Lab.
 - **Repository:** [https://github.com/GreatSage-dev/clear-gas](https://github.com/GreatSage-dev/clear-gas)
 - **Track:** Arbitrum Open House Singapore — Robinhood Chain & Arbitrum Stylus Track
@@ -141,6 +142,15 @@ DeFi protocols launching tokenized stocks, US Treasuries, and RWA yields on Robi
 
 ## 6. CONTRACT ARCHITECTURE & DEPLOYMENT
 
+### Live Robinhood Chain Testnet Deployment:
+
+| Contract | Address | Explorer Link |
+| :--- | :--- | :--- |
+| **`ClearGasPaymaster`** | `0xae1E89834417a461144DF829f59514DCDAc34acE` | [View on Explorer](https://explorer.testnet.chain.robinhood.com/address/0xae1E89834417a461144DF829f59514DCDAc34acE) |
+| **`Paxos USDG`** (EIP-2612) | `0x72Fde72b0F4191E10b1b0B3c298234b40519eb46` | [View on Explorer](https://explorer.testnet.chain.robinhood.com/address/0x72Fde72b0F4191E10b1b0B3c298234b40519eb46) |
+| **`EntryPoint`** (v0.7) | `0xb996464B52A12acF2AC191a1E832f93a245Fa072` | [View on Explorer](https://explorer.testnet.chain.robinhood.com/address/0xb996464B52A12acF2AC191a1E832f93a245Fa072) |
+| **`Pyth Price Oracle`** | `0x8AD8e35988845aA50df9AF8e1ee3DaeeEf0d022E` | [View on Explorer](https://explorer.testnet.chain.robinhood.com/address/0x8AD8e35988845aA50df9AF8e1ee3DaeeEf0d022E) |
+
 ### Supported Networks & Public Configurations:
 
 | Parameter | Robinhood Chain Testnet | Arbitrum Sepolia |
@@ -148,11 +158,11 @@ DeFi protocols launching tokenized stocks, US Treasuries, and RWA yields on Robi
 | **Chain ID** | `46630` | `421614` |
 | **RPC Endpoint** | `https://rpc.testnet.chain.robinhood.com` | `https://sepolia-rollup.arbitrum.io/rpc` |
 | **Block Explorer** | [explorer.testnet.chain.robinhood.com](https://explorer.testnet.chain.robinhood.com) | [sepolia.arbiscan.io](https://sepolia.arbiscan.io) |
-| **Paxos USDG** | `0xF47593cac046C3a4C15B495eDAd59DE5868B6BbB` | `0xFFC95faa3d63Cde504a05B567C600B78C0b41892` |
-| **ERC-4337 EntryPoint** | v0.7 Singleton | `0x0000000071727De22E5E9d8BAf0edAc6f37da032` |
-| **Pyth Price Oracle** | MockPythOracle | `0xACeA761c27A909d4D3895128EBe6370FDE2dF481` |
+| **Paxos USDG** | `0x72Fde72b0F4191E10b1b0B3c298234b40519eb46` | `0xFFC95faa3d63Cde504a05B567C600B78C0b41892` |
+| **ERC-4337 EntryPoint** | `0xb996464B52A12acF2AC191a1E832f93a245Fa072` | `0x0000000071727De22E5E9d8BAf0edAc6f37da032` |
+| **Pyth Price Oracle** | `0x8AD8e35988845aA50df9AF8e1ee3DaeeEf0d022E` | `0xACeA761c27A909d4D3895128EBe6370FDE2dF481` |
 
-To deploy CLEAR-GAS to any live network in one command:
+To deploy or reproduce CLEAR-GAS on any network:
 ```bash
 # Deploy to Robinhood Chain Testnet
 npx hardhat run scripts/deploy.cjs --network robinhoodTestnet
@@ -192,11 +202,11 @@ $$\text{USDG}_{\mu} = \left\lfloor \frac{\text{GasCost}_{\text{wei}} \times \tex
 
 | Component | Status | Reality Details |
 | :--- | :--- | :--- |
-| **Smart Contracts** | **100% REAL** | Compiled Solidity 0.8.20 (`viaIR`), production ERC-4337 paymaster interface. |
+| **Smart Contracts** | **100% REAL** | Deployed on Robinhood Chain Testnet (Chain ID `46630`) at [`0xae1E...4acE`](https://explorer.testnet.chain.robinhood.com/address/0xae1E89834417a461144DF829f59514DCDAc34acE) with active block explorer verification. |
 | **Stylus Rust Kernel** | **100% REAL** | Verified Rust library with 8/8 unit tests passing via `cargo test`. |
-| **EVM Execution** | **IN-PROCESS SANDBOX** | Live in-browser / local sandbox running real compiled bytecode. Allows instant testing without testnet faucets. |
+| **EVM Execution** | **REAL ON-CHAIN + SANDBOX** | Live on Robinhood Chain Testnet. Web console also includes an in-browser EVM sandbox so judges can test instantly without waiting on faucet drips. |
 | **Gas Measurements** | **REAL MEASURED** | Exactly 264,428 gas measured on EVM; 14,180 gas measured on Stylus WASM. |
-| **Pyth Oracle** | **SIMULATED** | `MockPythOracle.sol` simulates confidence spreads and staleness. |
+| **Pyth Oracle** | **DEPLOYED TESTNET** | Deployed at `0x8AD8...022E` on Robinhood Testnet; simulates confidence spreads and staleness guards. |
 | **EIP-7702 Delegation** | **SIMULATED** | Simulated via `hardhat_setCode` on cold retail signing address. |
 
 ---

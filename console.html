@@ -850,6 +850,7 @@ a{text-decoration:none;color:inherit}
     <div class="modal-body" style="padding:16px 20px">
       <table class="field-table" style="font-size:11px">
         <tr><td class="ft-key">Execution Network</td><td class="ft-val"><span class="hl">In-Process EVM Sandbox</span> (Robinhood Orbit L3 Simulation)</td></tr>
+        <tr><td class="ft-key">Deployed Paymaster</td><td class="ft-val"><a href="https://explorer.testnet.chain.robinhood.com/address/0xae1E89834417a461144DF829f59514DCDAc34acE" target="_blank" style="color:var(--lime-soft);text-decoration:none;font-family:var(--mono)">0xae1E...4acE ↗</a> (Robinhood Testnet 46630)</td></tr>
         <tr><td class="ft-key">Transaction Hash</td><td class="ft-val" id="rec-modal-hash"><span class="hl">0x...</span></td></tr>
         <tr><td class="ft-key">Block Status</td><td class="ft-val" id="rec-modal-block"><span class="hl">Mined</span></td></tr>
         <tr><td class="ft-key">Gas Units Burned</td><td class="ft-val" id="rec-modal-gas"><span class="hl">264,428</span> units</td></tr>
@@ -862,7 +863,10 @@ a{text-decoration:none;color:inherit}
         </td></tr>
       </table>
       <div style="margin-top:14px;display:flex;gap:8px">
-        <button class="ctrl-btn" style="flex:1;justify-content:center" onclick="closeReceiptModal()">Done</button>
+        <a href="https://explorer.testnet.chain.robinhood.com/address/0xae1E89834417a461144DF829f59514DCDAc34acE" target="_blank" class="ctrl-btn" style="flex:1;justify-content:center;text-decoration:none;color:var(--lime-soft);display:flex;align-items:center;gap:6px">
+          View on Robinhood Explorer ↗
+        </a>
+        <button class="ctrl-btn" style="padding:0 20px;justify-content:center" onclick="closeReceiptModal()">Done</button>
       </div>
     </div>
   </div>
