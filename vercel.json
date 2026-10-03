@@ -1,0 +1,6 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/console", "destination": "/console.html" }
+  ]
+}

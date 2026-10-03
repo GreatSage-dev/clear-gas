@@ -2,7 +2,6 @@
   "name": "clear-gas",
   "version": "1.0.0",
   "description": "CLEAR-GAS: Autonomous On-Chain Gas Clearinghouse & Stylus Paymaster for Robinhood Chain & Paxos USDG",
-  "main": "index.js",
   "type": "commonjs",
   "scripts": {
     "compile": "npx hardhat compile",
