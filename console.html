@@ -844,19 +844,20 @@ a{text-decoration:none;color:inherit}
 <div class="modal-backdrop" id="receipt-modal" onclick="if(event.target===this)closeReceiptModal()">
   <div class="modal-card" style="max-width:560px">
     <div class="modal-head">
-      <div class="modal-title"><span class="chip-dot" style="background:var(--ok)"></span> Mined On-Chain Transaction Receipt</div>
+      <div class="modal-title"><span class="chip-dot" style="background:var(--ok)"></span> EVM Execution Receipt (Sandbox Node)</div>
       <button class="modal-close" onclick="closeReceiptModal()">✕</button>
     </div>
     <div class="modal-body" style="padding:16px 20px">
       <table class="field-table" style="font-size:11px">
+        <tr><td class="ft-key">Execution Network</td><td class="ft-val"><span class="hl">In-Process EVM Sandbox</span> (Robinhood Orbit L3 Simulation)</td></tr>
         <tr><td class="ft-key">Transaction Hash</td><td class="ft-val" id="rec-modal-hash"><span class="hl">0x...</span></td></tr>
         <tr><td class="ft-key">Block Status</td><td class="ft-val" id="rec-modal-block"><span class="hl">Mined</span></td></tr>
-        <tr><td class="ft-key">Gas Units Burned</td><td class="ft-val" id="rec-modal-gas"><span class="hl">261,940</span> units</td></tr>
+        <tr><td class="ft-key">Gas Units Burned</td><td class="ft-val" id="rec-modal-gas"><span class="hl">264,428</span> units</td></tr>
         <tr><td class="ft-key">Gas Fee Settled</td><td class="ft-val" id="rec-modal-fee"><span class="hl">$0.019615 USDG</span></td></tr>
         <tr><td class="ft-key">User Native ETH Spent</td><td class="ft-val" style="color:var(--err)">0.000000000000000000 ETH (Zero)</td></tr>
         <tr><td class="ft-key">Verified Logs</td><td class="ft-val">
           1. <span class="hl">MockUSDG.Approval</span>(owner, ClearGasPaymaster, $1.00)<br>
-          2. <span class="hl">ClearGasPaymaster.GasCleared</span>(user, 261k gas, fee: $0.019615)<br>
+          2. <span class="hl">ClearGasPaymaster.GasCleared</span>(user, 264k gas, fee: $0.019615)<br>
           3. <span class="hl">MockEntryPoint.UserOperationEvent</span>(success=true)
         </td></tr>
       </table>
@@ -1216,7 +1217,7 @@ async function runSandbox(){
       success: true,
       txHash: fallbackHash,
       blockNumber: 10 + state.ops,
-      gasUsed: "261916",
+      gasUsed: "264428",
       effectiveGasPrice: "1267443648",
       userEthSpent: "0.000000000000000000",
       userUsdgBefore: curVal.toFixed(6),
