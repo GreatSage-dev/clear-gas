@@ -27,9 +27,9 @@ def run_deterministic_receipt():
     start_time = time.perf_counter()
 
     print("=" * 82)
-    print(" CLEAR-GAS: AUTONOMOUS ON-CHAIN GAS CLEARINGHOUSE & STYLUS PAYMASTER")
-    print(" Robinhood Chain (Arbitrum Orbit) * Paxos USDG * Pyth Confidence Oracle")
-    print(" Verified Deterministic Terminal Proof (Grand Champion Standard)")
+    print(" CLEAR-GAS: PAY GAS IN USDG WHEN YOU HAVE NO ETH")
+    print(" Robinhood Chain (Arbitrum Orbit) * Paxos USDG * Pyth Oracle Guard")
+    print(" Verified Deterministic Verification Proof")
     print("=" * 82)
 
     # -------------------------------------------------------------
@@ -61,7 +61,7 @@ def run_deterministic_receipt():
     # -------------------------------------------------------------
     # 2. THE 6 ADVERSARIAL ATTACK VECTORS (SECURITY LAB)
     # -------------------------------------------------------------
-    print("\n[MODULE 2: ADVERSARIAL SECURITY LAB (Epistemic Refusal)]")
+    print("\n[MODULE 2: ADVERSARIAL SECURITY LAB (Autonomous Safety Guards)]")
 
     # Vector 1: Oracle Spread Volatility
     normal_conf = 12_500_000   # 5 bps spread ($1.25 on $2500)
@@ -70,7 +70,7 @@ def run_deterministic_receipt():
     v1_rejected = spread_v1 > 150
     print(f"  Vector 1: Oracle Spread Divergence (Flash Crash / Depeg Spike)")
     print(f"    Observed Spread: {spread_v1} bps | Max Allowable Threshold: 150 bps")
-    print(f"    Action: Tri-State Epistemic Quarantine engaged -> Rejected: {v1_rejected} [PASSED]")
+    print(f"    Action: Price spread guard engaged -> Rejected: {v1_rejected} [PASSED]")
 
     # Vector 2: Stale Price Feed
     max_age = 60

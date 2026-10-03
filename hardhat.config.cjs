@@ -1,4 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
+require("dotenv").config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -18,7 +19,7 @@ module.exports = {
     },
     robinhoodTestnet: {
       url: process.env.ROBINHOOD_RPC_URL || "https://rpc.testnet.chain.robinhood.com/",
-      chainId: 4663,
+      chainId: 46630,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
     },
     arbitrumSepolia: {

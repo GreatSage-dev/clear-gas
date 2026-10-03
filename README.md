@@ -115,7 +115,51 @@ Instead of using off-chain relayers or multi-step approvals, CLEAR-GAS solves th
 
 ---
 
-## 5. CONTRACT ARCHITECTURE & TECHNICAL SPECS
+## 5. WHO ADOPTS THIS FIRST (GO-TO-MARKET & PRODUCT-MARKET FIT)
+
+### Wedge 1: Embedded Retail Wallets on Robinhood Chain (Day 1 Integration)
+When retail users trade tokenized equities on Robinhood Chain, their balances are primarily denominated in **Paxos USDG**, not volatile native ETH. Wallets embed CLEAR-GAS directly into their UserOp building pipeline:
+```typescript
+// 1-line integration for any Robinhood Chain wallet
+const userOp = await buildGaslessUserOp({
+  sender: userAddress,
+  paymaster: CLEAR_GAS_PAYMASTER_ROBINHOOD,
+  gasToken: "USDG"
+});
+```
+This permanently eliminates the #1 retail support ticket on consumer L2s: *"Why can't I send my money when my USDG balance is $50?"*
+
+### Wedge 2: Tokenized Asset & RWA Protocols
+DeFi protocols launching tokenized stocks, US Treasuries, and RWA yields on Robinhood Chain lose up to 90–95% of first-time users at the native ETH funding step. CLEAR-GAS enables an instant 1-click checkout flow where users fund and trade with zero initial ETH.
+
+### Wedge 3: Why Developers Choose It Over Centralized Relayers
+1. **Zero Server Maintenance**: Unlike Biconomy or Gelato, there are no hosted relayer servers, no API key secrets in client apps, and no centralized points of failure.
+2. **Autonomous Solvency**: The self-healing buffer guarantees the paymaster doesn't run dry mid-transaction.
+3. **20x Cheaper with Stylus**: Preflight verification drops to ~$0.001 (vs. ~$0.02 on EVM), making micro-transactions economically viable for mass retail.
+
+---
+
+## 6. CONTRACT ARCHITECTURE & DEPLOYMENT
+
+### Supported Networks & Public Configurations:
+
+| Parameter | Robinhood Chain Testnet | Arbitrum Sepolia |
+| :--- | :--- | :--- |
+| **Chain ID** | `46630` | `421614` |
+| **RPC Endpoint** | `https://rpc.testnet.chain.robinhood.com` | `https://sepolia-rollup.arbitrum.io/rpc` |
+| **Block Explorer** | [explorer.testnet.chain.robinhood.com](https://explorer.testnet.chain.robinhood.com) | [sepolia.arbiscan.io](https://sepolia.arbiscan.io) |
+| **Paxos USDG** | `0xF47593cac046C3a4C15B495eDAd59DE5868B6BbB` | `0xFFC95faa3d63Cde504a05B567C600B78C0b41892` |
+| **ERC-4337 EntryPoint** | v0.7 Singleton | `0x0000000071727De22E5E9d8BAf0edAc6f37da032` |
+| **Pyth Price Oracle** | MockPythOracle | `0xACeA761c27A909d4D3895128EBe6370FDE2dF481` |
+
+To deploy CLEAR-GAS to any live network in one command:
+```bash
+# Deploy to Robinhood Chain Testnet
+npx hardhat run scripts/deploy.cjs --network robinhoodTestnet
+
+# Deploy to Arbitrum Sepolia
+npx hardhat run scripts/deploy.cjs --network arbitrumSepolia
+```
 
 ### Contract Files:
 * **`contracts/ClearGasPaymaster.sol`**: Main paymaster contract handling UserOp validation, permit unpacking, and self-healing refills.
@@ -144,7 +188,7 @@ $$\text{USDG}_{\mu} = \left\lfloor \frac{\text{GasCost}_{\text{wei}} \times \tex
 
 ---
 
-## 6. RADICAL HONESTY TABLE
+## 7. RADICAL HONESTY TABLE
 
 | Component | Status | Reality Details |
 | :--- | :--- | :--- |
@@ -157,7 +201,7 @@ $$\text{USDG}_{\mu} = \left\lfloor \frac{\text{GasCost}_{\text{wei}} \times \tex
 
 ---
 
-## 7. HOW TO RUN THE TESTS LOCALLY
+## 8. HOW TO RUN THE TESTS LOCALLY
 
 Clone the repository and run all tests in seconds:
 
