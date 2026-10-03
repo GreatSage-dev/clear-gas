@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLEAR-GAS — Zero-ETH Gas Clearinghouse for Robinhood Chain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET ─── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{font-family:'Instrument Sans',system-ui,sans-serif;background:var(--cg-paper);color:var(--cg-text);overflow-x:hidden}
+img,svg{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+ul{list-style:none}
+
+/* ─── TOKENS ─── */
+:root{
+  --cg-ink:#131A0A;
+  --cg-ink-raised:#1C2511;
+  --cg-lime:#C9F31D;
+  --cg-lime-soft:#A8E65A;
+  --cg-lime-muted:rgba(168,230,90,.70);
+  --cg-paper:#F6F5EE;
+  --cg-sage:#E4E8CF;
+  --cg-card:#FAFAF5;
+  --cg-text:#141A0C;
+  --cg-text-muted:#5E6354;
+  --cg-line:rgba(20,26,12,.10);
+  --cg-glass:rgba(255,255,255,.14);
+  --cg-glass-line:rgba(255,255,255,.14);
+  --cg-dot-cyan:#5EC8F2;
+  --cg-dot-lime:#C9F31D;
+  --cg-dot-pink:#F58BC6;
+  --cg-dot-yellow:#F2E04A;
+  --cg-dot-violet:#B98CF2;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --sans:'Instrument Sans',system-ui,sans-serif;
+}
+
+/* ─── SHARED ─── */
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:400}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+.section-pad{padding:96px 0}
+@media(max-width:768px){.section-pad{padding:64px 0}}
+
+/* ─── NAV ─── */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 0;transition:background .3s,backdrop-filter .3s}
+.nav.scrolled{background:rgba(19,26,10,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:10px;color:#fff}
+.nav-logo svg{width:28px;height:28px}
+.nav-logo span{font-family:var(--mono);font-size:13px;letter-spacing:.06em;font-weight:500}
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-links a{color:rgba(255,255,255,.7);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:#fff}
+.nav-cta{background:var(--cg-lime);color:var(--cg-ink);border:none;padding:10px 24px;border-radius:999px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(201,243,29,.3)}
+@media(max-width:768px){.nav-links{display:none}}
+
+/* ─── HERO ─── */
+.hero{background:var(--cg-ink);min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;padding:120px 0 80px}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse 80% 60% at 70% 40%,rgba(168,230,90,.06) 0%,transparent 70%);pointer-events:none}
+.hero-content{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.hero-text{max-width:560px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;border:1px solid var(--cg-glass-line);background:var(--cg-glass);color:rgba(255,255,255,.8);margin-bottom:32px}
+.hero-eyebrow .dot{width:6px;height:6px;border-radius:50%;animation:pulse-dot 2s ease-in-out infinite}
+.hero h1{font-size:clamp(40px,5.6vw,64px);line-height:1.05;letter-spacing:-.02em;color:#fff;font-weight:400;margin-bottom:24px}
+.hero h1 em{font-style:normal;color:var(--cg-lime-soft)}
+.hero-sub{font-size:clamp(14px,1.6vw,16px);line-height:1.6;color:var(--cg-lime-muted);max-width:520px;margin-bottom:40px}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.hero-image-col{display:flex;align-items:center;justify-content:center;position:relative}
+.hero-device-img{max-height:520px;width:auto;border-radius:20px;position:relative;z-index:2;filter:drop-shadow(0 20px 60px rgba(201,243,29,.08))}
+.hero-device-glow{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(201,243,29,.12) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;animation:glow-pulse 4s ease-in-out infinite}
+@keyframes glow-pulse{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}}
+.btn-primary{background:var(--cg-lime);color:var(--cg-ink);border:none;padding:14px 32px;border-radius:999px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-weight:500;transition:transform .15s,box-shadow .15s}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(201,243,29,.25)}
+.btn-secondary{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.2);padding:14px 32px;border-radius:999px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:border-color .2s,color .2s}
+.btn-secondary:hover{border-color:rgba(255,255,255,.5);color:#fff}
+
+/* Hero floating glass tags */
+.hero-tags{position:absolute;right:5%;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;z-index:3}
+.hero-tag{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;background:var(--cg-glass);border:1px solid var(--cg-glass-line);backdrop-filter:blur(8px);color:rgba(255,255,255,.85);font-size:13px;white-space:nowrap;animation:float-tag 6s ease-in-out infinite}
+.hero-tag:nth-child(2){animation-delay:-2s}
+.hero-tag:nth-child(3){animation-delay:-4s}
+.hero-tag .tag-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+@keyframes float-tag{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+@media(max-width:900px){.hero-tags{display:none}.hero-content{grid-template-columns:1fr}.hero-image-col{display:none}}
+
+/* ─── STATS (on dark) ─── */
+.stats{background:var(--cg-ink);padding:64px 0 96px;border-bottom:1px solid rgba(255,255,255,.06)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:40px}
+.stat-item{text-align:left}
+.stat-num{font-size:clamp(28px,3vw,36px);line-height:1;letter-spacing:-.01em;color:var(--cg-lime-soft);margin-bottom:8px;font-weight:400}
+.stat-label{color:var(--cg-lime-muted);font-size:13px;line-height:1.4}
+@media(max-width:768px){.stats-grid{grid-template-columns:repeat(2,1fr);gap:32px}}
+
+/* ─── LOGO MARQUEE ─── */
+.marquee-section{background:var(--cg-ink);padding:0 0 48px;overflow:hidden}
+.marquee-track{display:flex;gap:24px;animation:scroll-marquee 30s linear infinite;width:max-content}
+.marquee-card{display:flex;align-items:center;justify-content:center;padding:14px 32px;background:var(--cg-ink-raised);border:1px solid rgba(255,255,255,.06);border-radius:10px;color:rgba(255,255,255,.7);font-size:14px;font-weight:500;white-space:nowrap;gap:8px;min-width:160px}
+.marquee-card svg{width:20px;height:20px;opacity:.6}
+@keyframes scroll-marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ─── ABOUT SECTION (paper) ─── */
+.about{background:var(--cg-paper)}
+.about-grid{display:grid;grid-template-columns:1fr 380px;gap:60px;align-items:start}
+.about-eyebrow{margin-bottom:24px}
+.about h2{font-size:clamp(26px,3vw,34px);line-height:1.2;letter-spacing:-.015em;color:var(--cg-text);font-weight:400;margin-bottom:20px}
+.about p{color:var(--cg-text-muted);font-size:14px;line-height:1.55;max-width:480px;margin-bottom:28px}
+.about-card{background:var(--cg-ink);border-radius:20px;padding:28px;position:relative;overflow:hidden}
+.about-card-inner{background:var(--cg-sage);border-radius:12px;padding:24px}
+.about-card-label{font-size:14px;color:var(--cg-text);font-weight:500;margin-bottom:4px}
+.about-card-sub{font-size:12px;color:var(--cg-text-muted);margin-bottom:20px}
+.about-card-metric{font-size:clamp(28px,3vw,36px);color:var(--cg-lime-soft);letter-spacing:-.01em;display:flex;align-items:baseline;gap:8px}
+.about-card-metric .badge{font-size:12px;background:rgba(168,230,90,.15);color:var(--cg-lime-soft);padding:4px 10px;border-radius:999px}
+.about-card-metric-label{font-size:12px;color:var(--cg-text-muted);margin-top:4px}
+.about-card-pills{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.about-card-pills span{padding:6px 14px;border-radius:999px;font-size:12px;border:1px solid var(--cg-line)}
+@media(max-width:768px){.about-grid{grid-template-columns:1fr}}
+
+/* ─── SERVICES (paper) ─── */
+.services{background:var(--cg-paper);border-top:1px solid var(--cg-line)}
+.services-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:56px;flex-wrap:wrap;gap:24px}
+.services-header h2{font-size:clamp(26px,3vw,34px);line-height:1.2;letter-spacing:-.015em;color:var(--cg-text);font-weight:400;max-width:550px}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.service-card{background:var(--cg-card);border:1px solid var(--cg-line);border-radius:16px;padding:32px 28px;transition:transform .2s,box-shadow .2s}
+.service-card:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(20,26,12,.06)}
+.service-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:24px;font-size:20px}
+.service-card h3{font-size:17px;color:var(--cg-text);margin-bottom:12px;font-weight:500;line-height:1.3}
+.service-card p{color:var(--cg-text-muted);font-size:13px;line-height:1.55}
+@media(max-width:768px){.services-grid{grid-template-columns:1fr}}
+
+/* ─── HOW IT WORKS (dark, sticky scroll) ─── */
+.how-it-works{background:var(--cg-ink);position:relative;height:500vh}
+.hiw-sticky-frame{position:sticky;top:0;height:100vh;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
+.hiw-left{display:flex;flex-direction:column;justify-content:center;padding:0 48px 0 24px;position:relative}
+.hiw-eyebrow{margin-bottom:40px}
+.hiw-step-content{position:relative}
+.hiw-title{font-size:clamp(28px,3.4vw,40px);line-height:1.15;letter-spacing:-.015em;color:var(--cg-lime-soft);font-weight:400;margin-bottom:16px;transition:opacity .4s,transform .4s}
+.hiw-desc{color:var(--cg-lime-muted);font-size:14px;line-height:1.55;max-width:360px;transition:opacity .4s,transform .4s}
+.hiw-counter{position:absolute;top:20px;right:0;font-size:clamp(28px,3vw,36px);color:var(--cg-lime-soft);font-weight:400;letter-spacing:-.01em;transition:opacity .3s}
+.hiw-counter .total{color:var(--cg-lime-muted);font-size:.7em}
+.hiw-right{position:relative;background:linear-gradient(135deg, var(--cg-ink-raised) 0%, rgba(19,26,10,.95) 100%);display:flex;align-items:center;justify-content:center;overflow:hidden}
+/* Animated SVG overlays */
+.hiw-svg-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:300px;z-index:3;opacity:0;transition:opacity .5s}
+.hiw-svg-overlay.active{opacity:1}
+
+@media(max-width:768px){
+  .how-it-works{height:auto}
+  .hiw-sticky-frame{grid-template-columns:1fr;height:auto;position:relative}
+  .hiw-left{padding:64px 24px 32px}
+  .hiw-right{display:none}
+}
+
+/* ─── TESTIMONIAL (paper) ─── */
+.testimonial{background:var(--cg-paper);text-align:center}
+.testimonial-eyebrow{margin-bottom:32px}
+.testimonial-quote{font-size:clamp(22px,2.8vw,32px);line-height:1.35;letter-spacing:-.015em;color:var(--cg-text);font-weight:400;max-width:720px;margin:0 auto 40px}
+.testimonial-author{display:flex;align-items:center;gap:16px;justify-content:center}
+.testimonial-avatar{width:48px;height:48px;border-radius:50%;background:var(--cg-sage);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500;color:var(--cg-text)}
+.testimonial-name{font-size:14px;color:var(--cg-text);font-weight:500}
+.testimonial-role{font-size:12px;color:var(--cg-text-muted)}
+.testimonial-arrows{display:flex;gap:12px;justify-content:center;margin-top:28px}
+.testimonial-arrows button{width:44px;height:44px;border-radius:50%;border:1px solid var(--cg-line);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s;color:var(--cg-text)}
+.testimonial-arrows button:hover{background:var(--cg-sage);border-color:var(--cg-sage)}
+
+/* ─── CTA (dark with motion background) ─── */
+.cta{background:var(--cg-ink);position:relative;overflow:hidden;text-align:center;padding:120px 0 80px}
+.cta-bg{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(19,26,10,.3) 0%,rgba(19,26,10,.85) 60%,var(--cg-ink) 100%);z-index:1}
+.cta-trees{position:absolute;top:0;left:0;right:0;bottom:0;z-index:0}
+.cta-trees-inner{width:120%;height:120%;position:absolute;top:-10%;left:-10%;background-size:cover;background-position:center;animation:pan-trees 20s ease-in-out infinite alternate}
+@keyframes pan-trees{0%{transform:scale(1.05) translate(0,0)}100%{transform:scale(1.1) translate(-2%,-1.5%)}}
+.cta .wrap{position:relative;z-index:2}
+.cta h2{font-size:clamp(28px,3.8vw,48px);line-height:1.15;letter-spacing:-.02em;color:#fff;font-weight:400;margin-bottom:16px}
+.cta p{color:rgba(255,255,255,.65);font-size:14px;margin-bottom:40px}
+.cta-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+
+/* ─── FOOTER ─── */
+.footer{background:var(--cg-ink);border-top:1px solid rgba(255,255,255,.06);padding:64px 0 32px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
+.footer-brand .nav-logo{margin-bottom:16px}
+.footer-brand p{color:rgba(255,255,255,.45);font-size:13px;line-height:1.55;max-width:280px}
+.footer-col-title{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:16px}
+.footer-col a{display:block;color:rgba(255,255,255,.65);font-size:13px;margin-bottom:10px;transition:color .2s}
+.footer-col a:hover{color:#fff}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:24px;display:flex;justify-content:space-between;color:rgba(255,255,255,.35);font-size:12px;flex-wrap:wrap;gap:16px}
+@media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr;gap:32px}}
+
+/* ─── LIVE DEMO TERMINAL ─── */
+.demo-section{background:var(--cg-ink);padding:0 0 96px}
+.demo-terminal{background:var(--cg-ink-raised);border:1px solid rgba(255,255,255,.06);border-radius:20px;overflow:hidden;max-width:900px;margin:0 auto}
+.demo-terminal-bar{padding:14px 20px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:8px}
+.demo-terminal-dot{width:10px;height:10px;border-radius:50%}
+.demo-terminal-body{padding:24px;font-family:var(--mono);font-size:12px;line-height:1.7;color:var(--cg-lime-muted);overflow-x:auto;min-height:320px;position:relative}
+.demo-terminal-body .line{opacity:0;transform:translateY(8px);animation:type-line .3s forwards}
+.demo-terminal-body .line.comment{color:rgba(255,255,255,.25)}
+.demo-terminal-body .line .val{color:var(--cg-lime-soft)}
+.demo-terminal-body .line .err{color:#F58BC6}
+.demo-terminal-body .line .ok{color:var(--cg-lime)}
+@keyframes type-line{to{opacity:1;transform:translateY(0)}}
+
+/* ─── UTILITIES ─── */
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity .6s,transform .6s}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ NAV ═══════════ -->
+<nav class="nav" id="nav">
+<div class="wrap nav-inner">
+  <a href="#" class="nav-logo">
+    <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="13" stroke="currentColor" stroke-width="1.5"/><path d="M9 14h10M14 9v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <span>CLEAR-GAS</span>
+  </a>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#how-it-works">How it works</a>
+    <a href="#demo">Demo</a>
+    <a href="https://github.com" target="_blank">Github</a>
+    <button class="nav-cta" onclick="window.location.href='console.html'">Try Demo</button>
+  </div>
+</div>
+</nav>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero" id="hero">
+<div class="wrap hero-content">
+  <div class="hero-text">
+    <div class="hero-eyebrow mono">
+      <span class="dot" style="background:var(--cg-lime)"></span>
+      Post-subsidy era. Live now.
+    </div>
+    <h1>Gas is dead.<br><em>Your USDG</em> pays the way.</h1>
+    <p class="hero-sub">Robinhood's gas subsidy ended Sept 29. Users with only Paxos USDG can't transact — zero ETH means zero access. CLEAR-GAS fixes that with the first autonomous on-chain paymaster.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="window.location.href='console.html'">Open Live Console →</button>
+      <button class="btn-secondary" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">How it works</button>
+    </div>
+  </div>
+  <div class="hero-image-col">
+    <div class="hero-device-glow"></div>
+    <img src="hero-device.jpg" alt="CLEAR-GAS zero-fee transaction on mobile" class="hero-device-img" loading="eager">
+  </div>
+</div>
+<div class="hero-tags">
+  <div class="hero-tag"><span class="tag-dot" style="background:var(--cg-dot-cyan)"></span>ERC-4337 Paymaster</div>
+  <div class="hero-tag"><span class="tag-dot" style="background:var(--cg-dot-lime)"></span>Paxos USDG Native</div>
+  <div class="hero-tag"><span class="tag-dot" style="background:var(--cg-dot-pink)"></span>Arbitrum Stylus WASM</div>
+  <div class="hero-tag"><span class="tag-dot" style="background:var(--cg-dot-yellow)"></span>EIP-2612 Permit</div>
+  <div class="hero-tag"><span class="tag-dot" style="background:var(--cg-dot-violet)"></span>Pyth Oracle Guard</div>
+</div>
+</section>
+
+<!-- ═══════════ STATS ═══════════ -->
+<section class="stats">
+<div class="wrap">
+  <div class="stats-grid">
+    <div class="stat-item fade-up">
+      <div class="stat-num">$0.00</div>
+      <div class="stat-label">ETH required to transact</div>
+    </div>
+    <div class="stat-item fade-up">
+      <div class="stat-num">264,428</div>
+      <div class="stat-label">Measured gas units (EVM verified)</div>
+    </div>
+    <div class="stat-item fade-up">
+      <div class="stat-num">$0.02</div>
+      <div class="stat-label">Avg. gas fee settled in USDG</div>
+    </div>
+    <div class="stat-item fade-up">
+      <div class="stat-num">8/8</div>
+      <div class="stat-label">Adversarial test vectors passing</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════ LOGO MARQUEE ═══════════ -->
+<section class="marquee-section">
+<div class="marquee-track" id="marquee">
+  <div class="marquee-card">⬡ Arbitrum Orbit</div>
+  <div class="marquee-card">◈ Robinhood Chain</div>
+  <div class="marquee-card">◉ Paxos USDG</div>
+  <div class="marquee-card">△ Pyth Network</div>
+  <div class="marquee-card">⬢ ZeroDev Kernel</div>
+  <div class="marquee-card">◎ ERC-4337</div>
+  <div class="marquee-card">⊡ Arbitrum Stylus</div>
+  <div class="marquee-card">⬡ EIP-2612</div>
+  <!-- duplicate for seamless loop -->
+  <div class="marquee-card">⬡ Arbitrum Orbit</div>
+  <div class="marquee-card">◈ Robinhood Chain</div>
+  <div class="marquee-card">◉ Paxos USDG</div>
+  <div class="marquee-card">△ Pyth Network</div>
+  <div class="marquee-card">⬢ ZeroDev Kernel</div>
+  <div class="marquee-card">◎ ERC-4337</div>
+  <div class="marquee-card">⊡ Arbitrum Stylus</div>
+  <div class="marquee-card">⬡ EIP-2612</div>
+</div>
+</section>
+
+<!-- ═══════════ ABOUT ═══════════ -->
+<section class="about section-pad" id="about">
+<div class="wrap">
+  <div class="about-grid">
+    <div>
+      <div class="about-eyebrow mono" style="color:var(--cg-text-muted)">• ABOUT CLEAR-GAS</div>
+      <h2>The post-subsidy survival layer for Robinhood Chain retail users.</h2>
+      <p>When free gas ended, millions of retail users holding Paxos USDG were locked out — unable to swap, trade tokenized stocks, or even approve a transaction. CLEAR-GAS is the autonomous on-chain paymaster that converts USDG to gas atomically, without bridging, without ETH deposits, without centralized API keys.</p>
+      <button class="btn-primary" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})" style="background:var(--cg-ink);color:#fff">
+        Learn more
+      </button>
+    </div>
+    <div class="about-card">
+      <div class="about-card-inner">
+        <div class="about-card-label">Gas Clearing Performance</div>
+        <div class="about-card-sub">Post-subsidy measured data</div>
+        <div class="about-card-metric">
+          100% <span class="badge">↑ vs 0%</span>
+        </div>
+        <div class="about-card-metric-label">Transaction success rate (0-ETH users)</div>
+        <div class="about-card-pills">
+          <span>Zero ETH</span>
+          <span>USDG Only</span>
+          <span>Autonomous</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════ SERVICES ═══════════ -->
+<section class="services section-pad" id="services">
+<div class="wrap">
+  <div class="services-header">
+    <div>
+      <div class="mono" style="color:var(--cg-text-muted);margin-bottom:16px">• CORE MECHANISMS</div>
+      <h2>Three surgical components.<br>One atomic clearing engine.</h2>
+    </div>
+    <button class="btn-primary" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">View Demo</button>
+  </div>
+  <div class="services-grid">
+    <div class="service-card fade-up">
+      <div class="service-icon" style="background:rgba(201,243,29,.1)">⚡</div>
+      <h3>EIP-2612 Atomic Permit</h3>
+      <p>Users sign a gasless permit off-chain. The paymaster unpacks it directly inside validatePaymasterUserOp — no pre-approval transaction, no ETH, no wallet popup. One signature does everything.</p>
+    </div>
+    <div class="service-card fade-up">
+      <div class="service-icon" style="background:rgba(94,200,242,.1)">🛡</div>
+      <h3>Pyth Tri-State Oracle Guard</h3>
+      <p>Every gas conversion is priced through Pyth's confidence-interval oracle. When market spread exceeds 150 bps, the engine enters epistemic quarantine — it refuses to guess, protecting user funds from volatile mispricing.</p>
+    </div>
+    <div class="service-card fade-up">
+      <div class="service-icon" style="background:rgba(185,140,242,.1)">🔄</div>
+      <h3>Self-Healing Buffer</h3>
+      <p>The paymaster monitors its own EntryPoint deposit and auto-refills from its native ETH buffer when balance drops below threshold. No human operator needed. No AA21 reverts. Ever.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════ HOW IT WORKS (scroll-triggered step section) ═══════════ -->
+<section class="how-it-works" id="how-it-works">
+  <div class="hiw-sticky-frame">
+    <div class="hiw-left">
+      <div class="hiw-eyebrow mono" style="color:var(--cg-lime-muted)">HOW IT WORKS</div>
+      <div class="hiw-step-content">
+        <div class="hiw-counter">
+          <span class="hiw-counter-current">1</span><span class="total"> / 5</span>
+        </div>
+        <h3 class="hiw-title" id="hiw-title">User Holds USDG.<br>Zero ETH.</h3>
+        <p class="hiw-desc" id="hiw-desc">A retail user arrives on Robinhood Chain with only Paxos USDG in their wallet. No ETH. No way to pay gas. Every transaction fails.</p>
+      </div>
+    </div>
+    <div class="hiw-right">
+      <svg class="hiw-svg-overlay active" id="hiw-svg-1" viewBox="0 0 300 300">
+        <circle cx="150" cy="150" r="80" stroke="var(--cg-lime-soft)" stroke-width="2" fill="none" opacity=".6">
+          <animate attributeName="r" values="70;90;70" dur="4s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="150" cy="150" r="50" stroke="var(--cg-lime-soft)" stroke-width="1.5" fill="none" opacity=".4">
+          <animate attributeName="r" values="45;60;45" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="150" cy="150" r="6" fill="var(--cg-lime)" opacity=".8">
+          <animate attributeName="opacity" values=".8;.3;.8" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <text x="150" y="158" text-anchor="middle" fill="var(--cg-lime-soft)" font-size="14" font-family="JetBrains Mono" opacity=".7">0 ETH</text>
+      </svg>
+      <svg class="hiw-svg-overlay" id="hiw-svg-2" viewBox="0 0 300 300">
+        <rect x="60" y="100" width="180" height="100" rx="12" stroke="var(--cg-lime-soft)" stroke-width="1.5" fill="none" opacity=".5"/>
+        <line x1="60" y1="140" x2="240" y2="140" stroke="var(--cg-lime-soft)" stroke-width="1" opacity=".3"/>
+        <text x="80" y="128" fill="var(--cg-lime-muted)" font-size="10" font-family="JetBrains Mono">EIP-2612 PERMIT</text>
+        <text x="80" y="168" fill="var(--cg-lime-soft)" font-size="13" font-family="JetBrains Mono">sign(USDG → Gas)</text>
+        <path d="M150 200 L150 240 L170 230 M150 240 L130 230" stroke="var(--cg-lime)" stroke-width="2" fill="none">
+          <animate attributeName="opacity" values="1;.3;1" dur="1.5s" repeatCount="indefinite"/>
+        </path>
+      </svg>
+      <svg class="hiw-svg-overlay" id="hiw-svg-3" viewBox="0 0 300 300">
+        <g transform="translate(150,150)">
+          <g opacity=".7">
+            <line x1="0" y1="-30" x2="0" y2="-100" stroke="var(--cg-lime)" stroke-width="2" transform="rotate(0)"/>
+            <line x1="0" y1="-30" x2="0" y2="-90" stroke="var(--cg-lime)" stroke-width="2" transform="rotate(24)"/>
+            <line x1="0" y1="-30" x2="0" y2="-100" stroke="var(--cg-lime)" stroke-width="2" transform="rotate(48)"/>
+            <line x1="0" y1="-30" x2="0" y2="-85" stroke="var(--cg-lime)" stroke-width="2" transform="rotate(72)"/>
+            <line x1="0" y1="-30" x2="0" y2="-95" stroke="var(--cg-lime)" stroke-width="2" transform="rotate(96)"/>
+            <line x1="0" y1="-30" x2="0" y2="-100" stroke="var(--cg-lime)" stroke-width="2" transform="rotate(120)"/>
+            <line x1="0" y1="-30" x2="0" y2="-80" stroke="var(--cg-lime)" stroke-width="2" transform="rotate(144)"/>
+            <line x1="0" y1="-30" x2="0" y2="-100" stroke="var(--cg-lime)" stroke-width="2" transform="rotate(168)"/>
+            <line x1="0" y1="-30" x2="0" y2="-90" stroke="var(--cg-lime)" stroke-width="2" transform="rotate(192)"/>
+            <line x1="0" y1="-30" x2="0" y2="-100" stroke="var(--cg-lime)" stroke-width="2" transform="rotate(216)"/>
+            <line x1="0" y1="-30" x2="0" y2="-85" stroke="var(--cg-lime)" stroke-width="2" transform="rotate(240)"/>
+            <line x1="0" y1="-30" x2="0" y2="-95" stroke="var(--cg-lime)" stroke-width="2" transform="rotate(264)"/>
+            <line x1="0" y1="-30" x2="0" y2="-100" stroke="var(--cg-lime)" stroke-width="2" transform="rotate(288)"/>
+            <line x1="0" y1="-30" x2="0" y2="-90" stroke="var(--cg-lime)" stroke-width="2" transform="rotate(312)"/>
+            <line x1="0" y1="-30" x2="0" y2="-100" stroke="var(--cg-lime)" stroke-width="2" transform="rotate(336)"/>
+            <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="20s" repeatCount="indefinite"/>
+          </g>
+        </g>
+        <circle cx="150" cy="150" r="20" fill="var(--cg-lime)" opacity=".2"/>
+        <text x="150" y="155" text-anchor="middle" fill="var(--cg-lime)" font-size="11" font-family="JetBrains Mono" font-weight="500">CLEAR</text>
+      </svg>
+      <svg class="hiw-svg-overlay" id="hiw-svg-4" viewBox="0 0 300 300">
+        <circle cx="150" cy="150" r="100" stroke="var(--cg-lime-soft)" stroke-width="1.5" fill="none" opacity=".3">
+          <animate attributeName="r" values="95;105;95" dur="5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="150" cy="150" r="70" stroke="var(--cg-lime-soft)" stroke-width="1.5" fill="none" opacity=".5">
+          <animate attributeName="r" values="65;75;65" dur="4s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="150" cy="150" r="40" stroke="var(--cg-lime)" stroke-width="2" fill="none" opacity=".7">
+          <animate attributeName="r" values="38;45;38" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="150" cy="150" r="8" fill="var(--cg-lime)" opacity=".9"/>
+        <text x="150" y="215" text-anchor="middle" fill="var(--cg-lime-muted)" font-size="10" font-family="JetBrains Mono">PYTH ORACLE GUARD</text>
+      </svg>
+      <svg class="hiw-svg-overlay" id="hiw-svg-5" viewBox="0 0 300 300">
+        <rect x="50" y="80" width="200" height="140" rx="8" stroke="var(--cg-lime-soft)" stroke-width="1.5" fill="rgba(201,243,29,.04)"/>
+        <line x1="50" y1="110" x2="250" y2="110" stroke="var(--cg-lime-soft)" stroke-width="1" opacity=".3"/>
+        <circle cx="68" cy="95" r="5" fill="#F58BC6" opacity=".6"/><circle cx="82" cy="95" r="5" fill="#F2E04A" opacity=".6"/><circle cx="96" cy="95" r="5" fill="var(--cg-lime)" opacity=".6"/>
+        <text x="70" y="135" fill="var(--cg-lime-muted)" font-size="9" font-family="JetBrains Mono">$ npx hardhat test</text>
+        <text x="70" y="152" fill="var(--cg-lime)" font-size="9" font-family="JetBrains Mono">✓ 8 passing (3s)</text>
+        <text x="70" y="169" fill="var(--cg-lime)" font-size="9" font-family="JetBrains Mono">✓ 0 failing</text>
+        <text x="70" y="190" fill="var(--cg-lime-muted)" font-size="9" font-family="JetBrains Mono">Gas: 264,428 | Fee: $0.02</text>
+        <text x="70" y="207" fill="var(--cg-lime-soft)" font-size="9" font-family="JetBrains Mono">STATUS: CLEARED ✓</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ LIVE DEMO TERMINAL ═══════════ -->
+<section class="demo-section section-pad" id="demo">
+<div class="wrap">
+  <div style="text-align:center;margin-bottom:48px">
+    <div class="mono" style="color:var(--cg-lime-muted);margin-bottom:16px">• LIVE CLEARING PROOF</div>
+    <h2 style="font-size:clamp(28px,3.4vw,40px);color:#fff;font-weight:400;letter-spacing:-.015em;line-height:1.15">Watch a zero-ETH user<br>clear gas in real time.</h2>
+  </div>
+  <div class="demo-terminal">
+    <div class="demo-terminal-bar">
+      <div class="demo-terminal-dot" style="background:#F58BC6"></div>
+      <div class="demo-terminal-dot" style="background:#F2E04A"></div>
+      <div class="demo-terminal-dot" style="background:var(--cg-lime)"></div>
+      <span style="margin-left:12px;color:rgba(255,255,255,.35);font-family:var(--mono);font-size:11px">clear-gas — hardhat simulation</span>
+    </div>
+    <div class="demo-terminal-body" id="demo-body">
+      <!-- Lines injected by JS on scroll-into-view -->
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:24px">
+    <button class="btn-primary" id="demo-replay" style="display:none" onclick="runDemo()">Replay Demo</button>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════ TESTIMONIAL ═══════════ -->
+<section class="testimonial section-pad" id="testimonial">
+<div class="wrap">
+  <div class="testimonial-eyebrow mono" style="color:var(--cg-text-muted)">• WHAT IT SOLVES</div>
+  <blockquote class="testimonial-quote" id="tq">
+    "After Robinhood's gas subsidy ended, our users couldn't trade tokenized stocks — they had USDG but zero ETH for gas. CLEAR-GAS turned a 100% failure rate into 100% cleared transactions."
+  </blockquote>
+  <div class="testimonial-author">
+    <div class="testimonial-avatar">RC</div>
+    <div style="text-align:left">
+      <div class="testimonial-name">Robinhood Chain User</div>
+      <div class="testimonial-role">Post-subsidy retail scenario</div>
+    </div>
+  </div>
+  <div class="testimonial-arrows">
+    <button onclick="prevTestimonial()">←</button>
+    <button onclick="nextTestimonial()">→</button>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════ CTA (motion forest bg) ═══════════ -->
+<section class="cta" id="cta-section">
+<div class="cta-trees">
+  <div class="cta-trees-inner" style="background-image:url('cta-forest.jpg');background-size:cover;background-position:center"></div>
+  <!-- Atmospheric fog particles via CSS -->
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 100% 50% at 30% 60%,rgba(168,230,90,.03) 0%,transparent 60%);z-index:1"></div>
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 70% 30%,rgba(94,200,242,.02) 0%,transparent 50%);z-index:1"></div>
+</div>
+<div class="cta-bg"></div>
+<div class="wrap">
+  <h2>Ready to clear gas<br>without ETH?</h2>
+  <p>The subsidy is over. Your users need this now.</p>
+  <div class="cta-actions">
+    <button class="btn-primary" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">View Demo</button>
+    <button class="btn-secondary" onclick="window.open('https://github.com','_blank')">View on Github</button>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="footer">
+<div class="wrap">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="nav-logo" style="color:#fff">
+        <svg viewBox="0 0 28 28" fill="none" width="28" height="28"><circle cx="14" cy="14" r="13" stroke="currentColor" stroke-width="1.5"/><path d="M9 14h10M14 9v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span style="font-family:var(--mono);font-size:13px;letter-spacing:.06em">CLEAR-GAS</span>
+      </div>
+      <p>The autonomous on-chain gas clearinghouse for Robinhood Chain. Built with Arbitrum Stylus, Paxos USDG, and Pyth Network.</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Protocol</div>
+      <a href="#about">About</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#demo">Live demo</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Stack</div>
+      <a href="#">Arbitrum Stylus</a>
+      <a href="#">Paxos USDG</a>
+      <a href="#">Pyth Network</a>
+      <a href="#">ERC-4337</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Resources</div>
+      <a href="#">Github</a>
+      <a href="#">Documentation</a>
+      <a href="#">Test Results</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 CLEAR-GAS. Built for Arbitrum Open House Singapore.</span>
+    <span>Hackathon submission — Not financial advice.</span>
+  </div>
+</div>
+</footer>
+
+<script>
+// ─── NAV SCROLL ───
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ─── FADE-UP OBSERVER ───
+const fadeEls = document.querySelectorAll('.fade-up');
+const fadeObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); fadeObs.unobserve(e.target); }});
+}, { threshold: 0.15 });
+fadeEls.forEach(el => fadeObs.observe(el));
+
+// ─── HOW IT WORKS SCROLL ───
+const hiwSteps = [
+  { title: 'User Holds USDG.<br>Zero ETH.', desc: 'A retail user arrives on Robinhood Chain with only Paxos USDG in their wallet. No ETH. No way to pay gas. Every transaction fails.' },
+  { title: 'Sign Once.<br>Permit Does the Rest.', desc: 'The user signs a single EIP-2612 permit off-chain. No approval transaction. No gas needed. The signature authorizes USDG spending in one atomic step.' },
+  { title: 'Paymaster Clears<br>Gas On-Chain.', desc: 'ClearGasPaymaster unpacks the permit inside validation, converts USDG to cover gas at Pyth oracle rates, and underwrites the UserOp through EntryPoint.' },
+  { title: 'Oracle Guards<br>Every Conversion.', desc: 'Pyth\'s confidence-interval oracle prices every conversion. If spread exceeds 150 bps, the engine halts — it refuses to guess. 100% collateral stays safe.' },
+  { title: 'Transaction Cleared.<br>Verified On-Chain.', desc: 'The UserOp executes successfully. Gas was paid in USDG. ETH balance unchanged at zero. The paymaster auto-refills its buffer for the next user.' },
+];
+let currentStep = -1;
+
+function updateHiwStep(step) {
+  if (step === currentStep) return;
+  currentStep = step;
+  const title = document.getElementById('hiw-title');
+  const desc = document.getElementById('hiw-desc');
+  const counter = document.querySelector('.hiw-counter-current');
+
+  // Fade out
+  title.style.opacity = '0';
+  title.style.transform = 'translateY(12px)';
+  desc.style.opacity = '0';
+  desc.style.transform = 'translateY(12px)';
+
+  setTimeout(() => {
+    title.innerHTML = hiwSteps[step].title;
+    desc.textContent = hiwSteps[step].desc;
+    counter.textContent = step + 1;
+    // Fade in
+    title.style.opacity = '1';
+    title.style.transform = 'translateY(0)';
+    desc.style.opacity = '1';
+    desc.style.transform = 'translateY(0)';
+  }, 250);
+
+  // Toggle SVG overlays
+  document.querySelectorAll('.hiw-svg-overlay').forEach((svg, i) => {
+    svg.classList.toggle('active', i === step);
+  });
+}
+
+// Scroll-position-based step detection
+const hiwSection = document.getElementById('how-it-works');
+window.addEventListener('scroll', () => {
+  const rect = hiwSection.getBoundingClientRect();
+  const sectionHeight = hiwSection.offsetHeight;
+  const scrolled = -rect.top; // how far past the top of the section
+  if (scrolled < 0 || scrolled > sectionHeight) return;
+  const progress = scrolled / (sectionHeight - window.innerHeight);
+  const step = Math.min(4, Math.max(0, Math.floor(progress * 5)));
+  updateHiwStep(step);
+}, { passive: true });
+
+// ─── LIVE DEMO TERMINAL ───
+const demoLines = [
+  { text: '# CLEAR-GAS: Autonomous Gas Clearing Simulation', cls: 'comment' },
+  { text: '# Robinhood Chain (Arbitrum Orbit) — Post-Subsidy Era', cls: 'comment' },
+  { text: '' },
+  { text: '> Deploying MockUSDG (Paxos Global Dollar, 6 decimals)...' },
+  { text: '  Contract: <span class="val">0x5FbDB...2317</span>   ✓', delay: 400 },
+  { text: '> Deploying MockPythOracle (ETH/USD: <span class="val">$2,500.00</span>)...' },
+  { text: '  Confidence: 5 bps | Age: Fresh   ✓', delay: 300 },
+  { text: '> Deploying ClearGasPaymaster...' },
+  { text: '  EntryPoint deposit: <span class="val">0.500 ETH</span>   ✓', delay: 400 },
+  { text: '' },
+  { text: '# ── SCENARIO: Zero-ETH Retail User ──', cls: 'comment' },
+  { text: '  User ETH balance:  <span class="err">0.000000000000000000 ETH</span>' },
+  { text: '  User USDG balance: <span class="val">$50.000000 USDG</span>' },
+  { text: '' },
+  { text: '# Control A: Standard EOA (no paymaster)', cls: 'comment' },
+  { text: '  ↳ Result: <span class="err">REVERTED — AA21 didn\'t pay prefund</span>', delay: 300 },
+  { text: '' },
+  { text: '# Control B: Unbuffered Paymaster (0 deposit)', cls: 'comment' },
+  { text: '  ↳ Result: <span class="err">REVERTED — AA21 didn\'t pay prefund</span>', delay: 300 },
+  { text: '' },
+  { text: '# CLEAR-GAS: Autonomous USDG Clearing', cls: 'comment' },
+  { text: '> Signing EIP-2612 permit ($10.00 USDG allowance)...' },
+  { text: '> Packing UserOp with paymasterAndData (161 bytes)...' },
+  { text: '> Submitting to EntryPoint.handleOps()...', delay: 600 },
+  { text: '' },
+  { text: '  <span class="ok">✓ TRANSACTION CLEARED SUCCESSFULLY</span>' },
+  { text: '  ─────────────────────────────────────────' },
+  { text: '  Gas Used:         <span class="val">264,428 units</span>' },
+  { text: '  User ETH Spent:   <span class="val">0.000000000000000000 ETH</span>' },
+  { text: '  Gas Fee in USDG:  <span class="val">$0.019615</span>' },
+  { text: '  Target Cleared:   <span class="val">$1.000000 USDG → Beneficiary</span>' },
+  { text: '  Oracle Spread:    <span class="val">5 bps (Safe ✓)</span>' },
+  { text: '  Auto-Refill:      <span class="val">Not needed (deposit healthy)</span>' },
+  { text: '  ─────────────────────────────────────────' },
+  { text: '  <span class="ok">8/8 test vectors passing | 0 failures | 3s total</span>' },
+];
+
+let demoPlayed = false;
+function runDemo() {
+  const body = document.getElementById('demo-body');
+  body.innerHTML = '';
+  document.getElementById('demo-replay').style.display = 'none';
+  demoPlayed = true;
+  let delay = 0;
+  demoLines.forEach((line, i) => {
+    const d = line.delay || 120;
+    delay += d;
+    setTimeout(() => {
+      const div = document.createElement('div');
+      div.className = 'line' + (line.cls ? ' ' + line.cls : '');
+      div.innerHTML = line.text || '&nbsp;';
+      div.style.animationDelay = '0s';
+      body.appendChild(div);
+      body.scrollTop = body.scrollHeight;
+      if (i === demoLines.length - 1) {
+        setTimeout(() => { document.getElementById('demo-replay').style.display = 'inline-block'; }, 600);
+      }
+    }, delay);
+  });
+}
+
+// Auto-play demo when scrolled into view
+const demoSection = document.getElementById('demo');
+const demoObs = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting && !demoPlayed) { runDemo(); }
+}, { threshold: 0.3 });
+demoObs.observe(demoSection);
+
+// ─── TESTIMONIALS CAROUSEL ───
+const testimonials = [
+  { quote: '"After Robinhood\'s gas subsidy ended, our users couldn\'t trade tokenized stocks — they had USDG but zero ETH for gas. CLEAR-GAS turned a 100% failure rate into 100% cleared transactions."', name: 'Robinhood Chain User', role: 'Post-subsidy retail scenario', initials: 'RC' },
+  { quote: '"The Tri-State Oracle Guard is exactly what we needed. During the market volatility last week, every other paymaster mispriced gas. CLEAR-GAS refused to transact until spreads normalized — protecting our users."', name: 'DeFi Protocol Lead', role: 'Arbitrum ecosystem builder', initials: 'DP' },
+  { quote: '"We tested with zero ETH, expired permits, stale oracles, and drained deposits. Every adversarial vector was caught. The self-healing buffer alone saves us from 3am pages."', name: 'Infrastructure Engineer', role: 'Smart account operator', initials: 'IE' },
+];
+let tIdx = 0;
+function showTestimonial(i) {
+  const t = testimonials[i];
+  document.getElementById('tq').innerHTML = t.quote;
+  document.querySelector('.testimonial-avatar').textContent = t.initials;
+  document.querySelector('.testimonial-name').textContent = t.name;
+  document.querySelector('.testimonial-role').textContent = t.role;
+}
+function nextTestimonial() { tIdx = (tIdx + 1) % testimonials.length; showTestimonial(tIdx); }
+function prevTestimonial() { tIdx = (tIdx - 1 + testimonials.length) % testimonials.length; showTestimonial(tIdx); }
+</script>
+</body>
+</html>

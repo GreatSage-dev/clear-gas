@@ -1,0 +1,26 @@
+{
+  "name": "clear-gas",
+  "version": "1.0.0",
+  "description": "CLEAR-GAS: Autonomous On-Chain Gas Clearinghouse & Stylus Paymaster for Robinhood Chain & Paxos USDG",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "test": "node scripts/run_tests.cjs",
+    "receipt": "python run_receipt.py",
+    "deploy:robinhood": "npx hardhat run scripts/deploy.cjs --network robinhoodTestnet"
+  },
+  "keywords": [
+    "arbitrum",
+    "stylus",
+    "robinhood-chain",
+    "paxos-usdg",
+    "zerodev",
+    "account-abstraction",
+    "erc-4337",
+    "paymaster",
+    "gas-clearinghouse"
+  ],
+  "author": "ClearGas Team",
+  "license": "MIT"
+}
